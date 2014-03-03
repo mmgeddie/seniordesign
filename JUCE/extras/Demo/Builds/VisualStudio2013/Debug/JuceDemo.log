@@ -1,0 +1,126 @@
+﻿Build started 2/26/2014 2:50:23 PM.
+     1>Project "C:\Users\zvade_000\Documents\GitHub\JUCE\extras\Demo\Builds\VisualStudio2013\JuceDemo.vcxproj" on node 2 (Rebuild target(s)).
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V120\Microsoft.CppClean.targets(76,5): warning : Access to the path 'c:\users\zvade_000\documents\github\juce\extras\demo\builds\visualstudio2013\debug\jucedemo.pdb' is denied.
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V120\Microsoft.CppClean.targets(76,5): warning : Access to the path 'c:\users\zvade_000\documents\github\juce\extras\demo\builds\visualstudio2013\debug\jucedemo.exe' is denied.
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I..\..\JuceLibraryCode /I..\..\..\..\modules /ZI /nologo /W4 /WX- /MP /Od /Oy- /D WIN32 /D _WINDOWS /D DEBUG /D _DEBUG /D JUCE_UNIT_TESTS=1 /D JUCER_VS2013_78A5020=1 /D JUCE_APP_VERSION=3.0.0 /D JUCE_APP_VERSION_HEX=0x30000 /Gm- /EHsc /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /GR /Fo"Debug\\" /Fd"Debug\\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt ..\..\Source\Main.cpp ..\..\Source\MainWindow.cpp ..\..\Source\IntroScreen.cpp ..\..\Source\Demos\AnimationDemo.cpp ..\..\Source\Demos\AudioLatencyDemo.cpp ..\..\Source\Demos\AudioPlaybackDemo.cpp ..\..\Source\Demos\AudioRecordingDemo.cpp ..\..\Source\Demos\AudioSettingsDemo.cpp ..\..\Source\Demos\AudioSynthesiserDemo.cpp ..\..\Source\Demos\Box2DDemo.cpp ..\..\Source\Demos\CameraDemo.cpp ..\..\Source\Demos\ChildProcessDemo.cpp ..\..\Source\Demos\CodeEditorDemo.cpp ..\..\Source\Demos\ComponentTransformsDemo.cpp ..\..\Source\Demos\CryptographyDemo.cpp ..\..\Source\Demos\DialogsDemo.cpp ..\..\Source\Demos\FontsDemo.cpp ..\..\Source\Demos\GraphicsDemo.cpp ..\..\Source\Demos\ImagesDemo.cpp ..\..\Source\Demos\JavaScript.cpp ..\..\Source\Demos\KeyMappingsDemo.cpp ..\..\Source\Demos\LiveConstantDemo.cpp ..\..\Source\Demos\MDIDemo.cpp ..\..\Source\Demos\MidiDemo.cpp ..\..\Source\Demos\MultithreadingDemo.cpp ..\..\Source\Demos\MultiTouch.cpp ..\..\Source\Demos\NetworkingDemo.cpp ..\..\Source\Demos\OpenGLDemo.cpp ..\..\Source\Demos\OpenGLDemo2D.cpp ..\..\Source\Demos\PropertiesDemo.cpp ..\..\Source\Demos\SystemInfoDemo.cpp ..\..\Source\Demos\TimersAndEventsDemo.cpp ..\..\Source\Demos\UnitTestsDemo.cpp ..\..\Source\Demos\ValueTreesDemo.cpp ..\..\Source\Demos\VideoDemo.cpp ..\..\Source\Demos\WebBrowserDemo.cpp ..\..\Source\Demos\WidgetsDemo.cpp ..\..\Source\Demos\WindowsDemo.cpp ..\..\Source\Demos\XMLandJSONDemo.cpp ..\..\JuceLibraryCode\BinaryData.cpp ..\..\..\..\modules\juce_audio_basics\juce_audio_basics.cpp ..\..\..\..\modules\juce_audio_devices\juce_audio_devices.cpp ..\..\..\..\modules\juce_audio_formats\juce_audio_formats.cpp ..\..\..\..\modules\juce_audio_processors\juce_audio_processors.cpp ..\..\..\..\modules\juce_audio_utils\juce_audio_utils.cpp ..\..\..\..\modules\juce_box2d\juce_box2d.cpp ..\..\..\..\modules\juce_core\juce_core.cpp ..\..\..\..\modules\juce_cryptography\juce_cryptography.cpp ..\..\..\..\modules\juce_data_structures\juce_data_structures.cpp ..\..\..\..\modules\juce_events\juce_events.cpp ..\..\..\..\modules\juce_graphics\juce_graphics.cpp ..\..\..\..\modules\juce_gui_basics\juce_gui_basics.cpp ..\..\..\..\modules\juce_gui_extra\juce_gui_extra.cpp ..\..\..\..\modules\juce_opengl\juce_opengl.cpp ..\..\..\..\modules\juce_video\juce_video.cpp
+         Main.cpp
+         MainWindow.cpp
+         IntroScreen.cpp
+         AnimationDemo.cpp
+         AudioLatencyDemo.cpp
+         AudioPlaybackDemo.cpp
+         AudioRecordingDemo.cpp
+         AudioSettingsDemo.cpp
+         AudioSynthesiserDemo.cpp
+         Box2DDemo.cpp
+         CameraDemo.cpp
+         ChildProcessDemo.cpp
+         CodeEditorDemo.cpp
+         ComponentTransformsDemo.cpp
+         CryptographyDemo.cpp
+         DialogsDemo.cpp
+         FontsDemo.cpp
+         GraphicsDemo.cpp
+         ImagesDemo.cpp
+         JavaScript.cpp
+         KeyMappingsDemo.cpp
+         LiveConstantDemo.cpp
+         MDIDemo.cpp
+         MidiDemo.cpp
+         MultithreadingDemo.cpp
+         MultiTouch.cpp
+         NetworkingDemo.cpp
+         OpenGLDemo.cpp
+         OpenGLDemo2D.cpp
+         PropertiesDemo.cpp
+         SystemInfoDemo.cpp
+         TimersAndEventsDemo.cpp
+         UnitTestsDemo.cpp
+         ValueTreesDemo.cpp
+         VideoDemo.cpp
+         WebBrowserDemo.cpp
+         WidgetsDemo.cpp
+         WindowsDemo.cpp
+         XMLandJSONDemo.cpp
+         BinaryData.cpp
+         juce_audio_basics.cpp
+         juce_audio_devices.cpp
+         juce_audio_formats.cpp
+         juce_audio_processors.cpp
+         juce_audio_utils.cpp
+         juce_box2d.cpp
+         juce_core.cpp
+         juce_cryptography.cpp
+         juce_data_structures.cpp
+         juce_events.cpp
+         juce_graphics.cpp
+         juce_gui_basics.cpp
+         juce_gui_extra.cpp
+         juce_opengl.cpp
+         juce_video.cpp
+       ResourceCompile:
+         C:\Program Files (x86)\Windows Kits\8.1\bin\x86\rc.exe /D _DEBUG /l"0x0409" /nologo /fo"Debug\resources.res" .\resources.rc 
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:".\Debug\\JuceDemo.exe" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /NODEFAULTLIB:libcmt.lib /NODEFAULTLIB:msvcrt.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"Debug\\JuceDemo.pdb" /SUBSYSTEM:WINDOWS /LARGEADDRESSAWARE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\Debug\JuceDemo.lib" /MACHINE:X86 /SAFESEH:NO Debug\resources.res
+         Debug\\Main.obj
+         Debug\\MainWindow.obj
+         Debug\\IntroScreen.obj
+         Debug\\AnimationDemo.obj
+         Debug\\AudioLatencyDemo.obj
+         Debug\\AudioPlaybackDemo.obj
+         Debug\\AudioRecordingDemo.obj
+         Debug\\AudioSettingsDemo.obj
+         Debug\\AudioSynthesiserDemo.obj
+         Debug\\Box2DDemo.obj
+         Debug\\CameraDemo.obj
+         Debug\\ChildProcessDemo.obj
+         Debug\\CodeEditorDemo.obj
+         Debug\\ComponentTransformsDemo.obj
+         Debug\\CryptographyDemo.obj
+         Debug\\DialogsDemo.obj
+         Debug\\FontsDemo.obj
+         Debug\\GraphicsDemo.obj
+         Debug\\ImagesDemo.obj
+         Debug\\JavaScript.obj
+         Debug\\KeyMappingsDemo.obj
+         Debug\\LiveConstantDemo.obj
+         Debug\\MDIDemo.obj
+         Debug\\MidiDemo.obj
+         Debug\\MultithreadingDemo.obj
+         Debug\\MultiTouch.obj
+         Debug\\NetworkingDemo.obj
+         Debug\\OpenGLDemo.obj
+         Debug\\OpenGLDemo2D.obj
+         Debug\\PropertiesDemo.obj
+         Debug\\SystemInfoDemo.obj
+         Debug\\TimersAndEventsDemo.obj
+         Debug\\UnitTestsDemo.obj
+         Debug\\ValueTreesDemo.obj
+         Debug\\VideoDemo.obj
+         Debug\\WebBrowserDemo.obj
+         Debug\\WidgetsDemo.obj
+         Debug\\WindowsDemo.obj
+         Debug\\XMLandJSONDemo.obj
+         Debug\\BinaryData.obj
+         Debug\\juce_audio_basics.obj
+         Debug\\juce_audio_devices.obj
+         Debug\\juce_audio_formats.obj
+         Debug\\juce_audio_processors.obj
+         Debug\\juce_audio_utils.obj
+         Debug\\juce_box2d.obj
+         Debug\\juce_core.obj
+         Debug\\juce_cryptography.obj
+         Debug\\juce_data_structures.obj
+         Debug\\juce_events.obj
+         Debug\\juce_graphics.obj
+         Debug\\juce_gui_basics.obj
+         Debug\\juce_gui_extra.obj
+         Debug\\juce_opengl.obj
+         Debug\\juce_video.obj
+     1>LINK : fatal error LNK1104: cannot open file '.\Debug\\JuceDemo.exe'
+     1>Done Building Project "C:\Users\zvade_000\Documents\GitHub\JUCE\extras\Demo\Builds\VisualStudio2013\JuceDemo.vcxproj" (Rebuild target(s)) -- FAILED.
+
+Build FAILED.
+
+Time Elapsed 00:00:47.09
