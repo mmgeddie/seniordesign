@@ -53,35 +53,11 @@ public class DTMFGenerator extends JFrame implements ActionListener{
 		}
 	};
 	
-	private final int stepSize = 256;
-	
-	private final JProgressBar[] powerBars;
-	private final JLabel detectedChar = new JLabel(" ");
-	
+	private final static int stepSize = 256;
+		
 	public DTMFGenerator(){
 		this.getContentPane().setLayout(new BorderLayout(5,3));
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		JPanel detectionPanel = new JPanel(new GridLayout(DTMF.DTMF_FREQUENCIES.length,2,5,3));
-		powerBars = new JProgressBar[DTMF.DTMF_FREQUENCIES.length];
-		for(int i= 0 ; i < DTMF.DTMF_FREQUENCIES.length ; i++){
-			detectionPanel.add(new JLabel(DTMF.DTMF_FREQUENCIES[i] + "Hz"));
-			powerBars[i] = new JProgressBar(-30,50);
-			detectionPanel.add(powerBars[i]);
-			powerBars[i].setValue(-30);
-		}
-		detectionPanel.setBorder(new TitledBorder("Detected Powers"));
-		
-		JPanel labelPanel = new JPanel(new BorderLayout());
-		labelPanel.add(detectionPanel,BorderLayout.NORTH);
-		
-		detectedChar.setBorder(new TitledBorder("Detected character"));
-		detectedChar.setHorizontalAlignment(JLabel.CENTER);
-		
-		Font f = new Font("Police", Font.PLAIN, 20);
-		detectedChar.setFont(f);
-		
-		labelPanel.add(detectedChar,BorderLayout.CENTER);
 		
 		JPanel dailPad = new JPanel(new GridLayout(4,4));
 		dailPad.setBorder(new TitledBorder("DailPad"));
@@ -97,7 +73,6 @@ public class DTMFGenerator extends JFrame implements ActionListener{
 		dailPad.addKeyListener(keyAdapter);
 		
 		this.add(dailPad,BorderLayout.CENTER);
-//		this.add(labelPanel,BorderLayout.SOUTH);
 	}
 
 	public static void main(String...strings){
@@ -113,8 +88,18 @@ public class DTMFGenerator extends JFrame implements ActionListener{
 				frame.pack();
 				frame.setSize(200,150);
 				frame.setVisible(true);
+				
 			}
 		});
+		try {
+			process('0');
+		} catch (UnsupportedAudioFileException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (LineUnavailableException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -138,7 +123,7 @@ public class DTMFGenerator extends JFrame implements ActionListener{
 	 * @throws UnsupportedAudioFileException
 	 * @throws LineUnavailableException
 	 */
-	public void process(char character) throws UnsupportedAudioFileException, LineUnavailableException{
+	public static void process(char character) throws UnsupportedAudioFileException, LineUnavailableException{
 		final float[] floatBuffer = DTMF.generateDTMFTone(character);		
 		final AudioFormat format = new AudioFormat(44100, 16, 1, true, false);
 		final AudioFloatConverter converter = AudioFloatConverter.getConverter(format);
