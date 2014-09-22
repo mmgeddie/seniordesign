@@ -16,6 +16,8 @@ public class MyActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
+        DTMFListner listner = new DTMFListner(this);
+
     }
 
 
@@ -38,9 +40,9 @@ public class MyActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void doSomethingCrazy(View v) {
-//        ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_DTMF, 100);
-//        tg.startTone(ToneGenerator.TONE_DTMF_0, 2000);
-          DTMFListner listner = new DTMFListner();
+    public void playTone(View v) {
+        ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_DTMF, 100);
+        tg.startTone(ToneGenerator.TONE_DTMF_0, 2000);
+
     }
 }

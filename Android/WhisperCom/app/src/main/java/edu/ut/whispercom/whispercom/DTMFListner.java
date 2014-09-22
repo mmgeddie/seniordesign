@@ -1,10 +1,16 @@
 package edu.ut.whispercom.whispercom;
 
+import android.app.Activity;
 import android.media.AudioRecord;
+import android.media.MediaRecorder;
+import android.view.View;
+import android.widget.TextView;
 
 import java.util.Arrays;
 
 
+import be.tarsos.dsp.io.TarsosDSPAudioFormat;
+import be.tarsos.dsp.io.TarsosDSPAudioInputStream;
 import be.tarsos.dsp.io.android.AudioDispatcherFactory;
 import be.tarsos.dsp.pitch.Goertzel.FrequenciesDetectedHandler;
 import be.tarsos.dsp.AudioDispatcher;
@@ -23,11 +29,16 @@ public class DTMFListner{
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -1143769091770146361L;
+//	private final int stepSize = 256*4;
+    private final int stepSize = 3584*2;
+
+    private final int sampleRate = 44100;
+//    private final int sampleRate = 8000;
+
+    private TextView view;
+    private Activity activity;
 	
-	private final int stepSize = 256*4;
-	
-	private final AudioProcessor goertzelAudioProcessor = new GoertzelImpl(44100, stepSize, DTMF.DTMF_FREQUENCIES, new FrequenciesDetectedHandler() {
+	private final AudioProcessor goertzelAudioProcessor = new GoertzelImpl(sampleRate, stepSize, DTMF.DTMF_FREQUENCIES, new FrequenciesDetectedHandler() {
 		@Override
 		public void handleDetectedFrequencies(final double[] frequencies, final double[] powers, final double[] allFrequencies, final double allPowers[]) {
 			System.out.println(Arrays.toString(frequencies));
@@ -43,41 +54,63 @@ public class DTMFListner{
 						colIndex = i-4;
 				}
 				if(rowIndex>=0 && colIndex>=0){
-//					detectedChar.setText(""+DTMF.DTMF_CHARACTERS[rowIndex][colIndex]);
 					System.out.println(""+DTMF.DTMF_CHARACTERS[rowIndex][colIndex]);
-//					for (int i = 0; i < allPowers.length; i++) {
-//						powerBars[i].setValue((int) allPowers[i]);
-//					}
 				}
 			}
 		}
 	});
 
-    private final AudioProcessor lowAudioProcessor = new GoertzelImpl(8000, stepSize, DTMF.DTMF_FREQUENCIES, new FrequenciesDetectedHandler() {
+    private final AudioProcessor lowAudioProcessor = new GoertzelImpl(sampleRate, stepSize, DTMF.DTMF_FREQUENCIES, new FrequenciesDetectedHandler() {
         @Override
         public void handleDetectedFrequencies(final double[] frequencies, final double[] powers, final double[] allFrequencies, final double allPowers[]) {
-            System.out.println(Arrays.toString(frequencies));
+            System.out.println("All freq: "+Arrays.toString(frequencies));
+            if (frequencies.length >= 2) {
+                double f1 = 0;
+                double f2 = 0;
+                double highestPower = 0;
+                for (int i = 0; i < powers.length; i++) {
+                    if (powers[i] > highestPower) {
+                        f2 = f1;
+                        f1 = frequencies[i];
+                    }
+                }
+                System.out.println("["+f1+"] ["+f2+"]");
+                int rowIndex = -1;
+                int colIndex = -1;
+                for (int i = 0; i < 4; i++) {
+                    if (f1 == DTMF.DTMF_FREQUENCIES[i] || f2 == DTMF.DTMF_FREQUENCIES[i])
+                        rowIndex = i;
+                }
+                for (int i = 4; i < DTMF.DTMF_FREQUENCIES.length; i++) {
+                    if (f1 == DTMF.DTMF_FREQUENCIES[i] || f2 == DTMF.DTMF_FREQUENCIES[i])
+                        colIndex = i-4;
+                }
+                if(rowIndex>=0 && colIndex>=0){
+                    System.out.println(""+DTMF.DTMF_CHARACTERS[rowIndex][colIndex]);
+
+                    String number = ""+DTMF.DTMF_CHARACTERS[rowIndex][colIndex];
+                    UpdateNum updateNum = new UpdateNum(number);
+                    activity.runOnUiThread(updateNum);
+                }
+            }
         }
     });
 
-	public DTMFListner(){
+	public DTMFListner(Activity activity){
+        this.activity = activity;
+        view = (TextView)activity.findViewById(R.id.textView);
+        view.setText("testing");
 		process();
 	}
 
-	public static void main(String...strings){
-		new DTMFListner();
-	}
-	
 	/**
 	 * Process a DTMF character: generate sound and decode the sound.
 	 */
 	public void process(){
         AudioDispatcher dispatcher = null;
         try {
-//            Emulator only supports 8000 sample rate
-//            dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(44100, stepSize, 0);
+            dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(sampleRate, stepSize, 0);
 //            dispatcher.addAudioProcessor(goertzelAudioProcessor);
-            dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(8000, stepSize, 0);
             dispatcher.addAudioProcessor(lowAudioProcessor);
             new Thread(dispatcher).start();
         } catch (Exception e) {
@@ -87,4 +120,15 @@ public class DTMFListner{
         }
 
 	}
+
+    private class UpdateNum implements Runnable {
+        String num;
+        UpdateNum(String num) {
+            this.num = num;
+        }
+        @Override
+        public void run() {
+            view.setText(num);
+        }
+    };
 }

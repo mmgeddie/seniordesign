@@ -41,34 +41,43 @@ public class DTMFListner extends JFrame implements ActionListener{
 	 */
 	private static final long serialVersionUID = -1143769091770146361L;
 	
-	private final int stepSize = 256*4;
+	private final int stepSize = 256*8;
 	
 	private final AudioProcessor goertzelAudioProcessor = new GoertzelImpl(44100, stepSize,DTMF.DTMF_FREQUENCIES, new FrequenciesDetectedHandler() {
 		@Override
 		public void handleDetectedFrequencies(final double[] frequencies, final double[] powers, final double[] allFrequencies, final double allPowers[]) {
-			System.out.println(Arrays.toString(frequencies));
-			if (frequencies.length == 2) {
-				int rowIndex = -1;
-				int colIndex = -1;
-				for (int i = 0; i < 4; i++) {
-					if (frequencies[0] == DTMF.DTMF_FREQUENCIES[i] || frequencies[1] == DTMF.DTMF_FREQUENCIES[i])
-						rowIndex = i;
-				}
-				for (int i = 4; i < DTMF.DTMF_FREQUENCIES.length; i++) {
-					if (frequencies[0] == DTMF.DTMF_FREQUENCIES[i] || frequencies[1] == DTMF.DTMF_FREQUENCIES[i])
-						colIndex = i-4;
-				}
-				if(rowIndex>=0 && colIndex>=0){
-					detectedChar.setText(""+DTMF.DTMF_CHARACTERS[rowIndex][colIndex]);
-					System.out.println(""+DTMF.DTMF_CHARACTERS[rowIndex][colIndex]);
-//					for (int i = 0; i < allPowers.length; i++) {
-//						powerBars[i].setValue((int) allPowers[i]);
-//					}
-				}
-			}
-			for (int i = 0; i < allPowers.length; i++) {
-				powerBars[i].setValue((int) allPowers[i]);
-			}
+//			System.out.println(Arrays.toString(frequencies));
+			 if (frequencies.length > 2) {
+	                double fc = 0;
+	                double fr = 0;
+	                double highestPowerCol = 0;
+	                double highestPowerRow = 0;
+	                for (int i = 0; i < powers.length; i++) {
+	                    if (frequencies[i] < 1000 && powers[i] > highestPowerRow) {
+	                    	fr = frequencies[i];
+	                    } else if (frequencies[i] > 1000 && powers[i] > highestPowerCol) {
+	                    	fc = frequencies[i];
+	                    }
+	                }
+	                System.out.println("["+fc+"] ["+fr+"]");
+	                int rowIndex = -1;
+	                int colIndex = -1;
+	                for (int i = 0; i < 4; i++) {
+	                    if (fr == DTMF.DTMF_FREQUENCIES[i])
+	                        rowIndex = i;
+	                }
+	                for (int i = 4; i < DTMF.DTMF_FREQUENCIES.length; i++) {
+	                    if (fc == DTMF.DTMF_FREQUENCIES[i])
+	                        colIndex = i-4;
+	                }
+	                if(rowIndex>=0 && colIndex>=0){
+						detectedChar.setText(""+DTMF.DTMF_CHARACTERS[rowIndex][colIndex]);
+	                    System.out.println(""+DTMF.DTMF_CHARACTERS[rowIndex][colIndex]);
+	                }
+	            }
+//			for (int i = 0; i < allPowers.length; i++) {
+//				powerBars[i].setValue((int) allPowers[i]);
+//			}
 		}
 	});
 	
