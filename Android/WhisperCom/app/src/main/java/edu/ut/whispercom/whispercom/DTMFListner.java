@@ -93,8 +93,8 @@ public class DTMFListner{
                     System.out.println(""+DTMF.DTMF_CHARACTERS[rowIndex][colIndex]);
 
                     String number = ""+DTMF.DTMF_CHARACTERS[rowIndex][colIndex];
-                    UpdateNum updateNum = new UpdateNum(number);
-                    activity.runOnUiThread(updateNum);
+//                    UpdateNum updateNum = new UpdateNum(number);
+//                    activity.runOnUiThread(updateNum);
                 }
             }
         }
