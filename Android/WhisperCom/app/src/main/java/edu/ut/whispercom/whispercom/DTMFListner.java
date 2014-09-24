@@ -33,12 +33,14 @@ public class DTMFListner{
     private final int stepSize = 3584*2;
 
     private final int sampleRate = 44100;
-//    private final int sampleRate = 8000;
+//    private final int sampleRate = 8000;1800
+
+    private final double frequency[] ={18000, 18010, 18500,18750,19000,19250,19500,19750,20000};
 
     private TextView view;
     private Activity activity;
 	
-	private final AudioProcessor goertzelAudioProcessor = new GoertzelImpl(sampleRate, stepSize, DTMF.DTMF_FREQUENCIES, new FrequenciesDetectedHandler() {
+	private final AudioProcessor goertzelAudioProcessor = new GoertzelImpl(sampleRate, stepSize, frequency, new FrequenciesDetectedHandler() {
 		@Override
 		public void handleDetectedFrequencies(final double[] frequencies, final double[] powers, final double[] allFrequencies, final double allPowers[]) {
 			System.out.println(Arrays.toString(frequencies));
@@ -46,11 +48,11 @@ public class DTMFListner{
 				int rowIndex = -1;
 				int colIndex = -1;
 				for (int i = 0; i < 4; i++) {
-					if (frequencies[0] == DTMF.DTMF_FREQUENCIES[i] || frequencies[1] == DTMF.DTMF_FREQUENCIES[i])
+					if (frequencies[0] == frequency[i] || frequencies[1] == frequency[i])
 						rowIndex = i;
 				}
-				for (int i = 4; i < DTMF.DTMF_FREQUENCIES.length; i++) {
-					if (frequencies[0] == DTMF.DTMF_FREQUENCIES[i] || frequencies[1] == DTMF.DTMF_FREQUENCIES[i])
+				for (int i = 4; i < frequency.length; i++) {
+					if (frequencies[0] == frequency[i] || frequencies[1] == frequency[i])
 						colIndex = i-4;
 				}
 				if(rowIndex>=0 && colIndex>=0){
@@ -60,10 +62,12 @@ public class DTMFListner{
 		}
 	});
 
-    private final AudioProcessor lowAudioProcessor = new GoertzelImpl(sampleRate, stepSize, DTMF.DTMF_FREQUENCIES, new FrequenciesDetectedHandler() {
+    private final AudioProcessor lowAudioProcessor = new GoertzelImpl(sampleRate, stepSize, frequency, new FrequenciesDetectedHandler() {
         @Override
         public void handleDetectedFrequencies(final double[] frequencies, final double[] powers, final double[] allFrequencies, final double allPowers[]) {
             System.out.println("All freq: "+Arrays.toString(frequencies));
+            UpdateNum updateNum = new UpdateNum(Arrays.toString(frequencies));
+            activity.runOnUiThread(updateNum);
             if (frequencies.length >= 2) {
                 double f1 = 0;
                 double f2 = 0;
@@ -78,11 +82,11 @@ public class DTMFListner{
                 int rowIndex = -1;
                 int colIndex = -1;
                 for (int i = 0; i < 4; i++) {
-                    if (f1 == DTMF.DTMF_FREQUENCIES[i] || f2 == DTMF.DTMF_FREQUENCIES[i])
+                    if (f1 == frequency[i] || f2 == frequency[i])
                         rowIndex = i;
                 }
-                for (int i = 4; i < DTMF.DTMF_FREQUENCIES.length; i++) {
-                    if (f1 == DTMF.DTMF_FREQUENCIES[i] || f2 == DTMF.DTMF_FREQUENCIES[i])
+                for (int i = 4; i < frequency.length; i++) {
+                    if (f1 == frequency[i] || f2 == frequency[i])
                         colIndex = i-4;
                 }
                 if(rowIndex>=0 && colIndex>=0){
