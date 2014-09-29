@@ -89,7 +89,7 @@ public class GoertzelImpl implements AudioProcessor {
 				}
 			}
 			handler.handleDetectedFrequencies(frequencies, powers,
-					DTMF.DTMF_FREQUENCIES, calculatedPowers.clone());
+                    frequenciesToDetect, calculatedPowers.clone());
 		}
 
 		return true;

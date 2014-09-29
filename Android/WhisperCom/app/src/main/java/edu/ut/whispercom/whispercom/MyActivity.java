@@ -1,23 +1,34 @@
 package edu.ut.whispercom.whispercom;
 
-import android.media.AudioManager;
-import android.media.ToneGenerator;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MyActivity extends ActionBarActivity {
+
+//    final static int[] rowFreqs = {697, 770, 852, 941};
+//    final static int[] colFreqs = {1209, 1336, 1477, 1633};
+
+    final static int[] rowFreqs = {18000, 18250, 18500, 18750};
+    final static int[] colFreqs = {19000, 19250, 19500, 19750};
+    List<String> transmitLog = new ArrayList<String>();
+    List<Character> receiveLog = new ArrayList<Character>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
-        DTMFListner listner = new DTMFListner(this);
+        Listner listner = new Listner(this);
 
+//        new AudioDispatcher(audioStream, 3584, 0);
     }
 
 
@@ -41,8 +52,14 @@ public class MyActivity extends ActionBarActivity {
     }
 
     public void playTone(View v) {
-        ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_DTMF, 100);
-        tg.startTone(ToneGenerator.TONE_DTMF_0, 2000);
+        String buttonText = ((Button) v).getText().toString();
+        updateTransmitLog(buttonText);
+        new PlaySound(buttonText);
+    }
 
+    public void updateTransmitLog(String buttonText) {
+        transmitLog.add(buttonText);
+        TextView tv =  (TextView)findViewById(R.id.textViewTransmitLog);
+        tv.setText(transmitLog.toString());
     }
 }
