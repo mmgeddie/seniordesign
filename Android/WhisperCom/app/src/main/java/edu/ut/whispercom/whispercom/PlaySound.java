@@ -79,12 +79,23 @@ public class PlaySound {
         // convert to 16 bit pcm sound array
         // assumes the sampleRow buffer is normalised.
         int idx = 0;
+        int ramp = numSamples / 20 ;
         for (int i = 0; i < numSamples; ++i) {
             final double dRowVal = sampleRow[i];
             final double dColVal = sampleCol[i];
             // scale to maximum amplitude
-            final short valRow = (short) ((dRowVal * 32767));
-            final short valCol = (short) ((dColVal * 32767));
+            final short valRow;
+            final short valCol;
+            if (i < ramp) {
+                valRow = (short) ((dRowVal * 32767 * i/ramp));
+                valCol = (short) ((dColVal * 32767 * i/ramp));
+            } else if (i < numSamples - ramp) {
+                valRow = (short) ((dRowVal * 32767));
+                valCol = (short) ((dColVal * 32767));
+            } else {
+                valRow = (short) ((dRowVal * 32767 * (numSamples-i)/ramp ));
+                valCol = (short) ((dColVal * 32767 * (numSamples-i)/ramp ));
+            }
             // in 16 bit wav PCM, first byte is the low order byte
             generatedRowSnd[idx] = (byte) (valRow & 0x00ff);
             generatedColSnd[idx] = (byte) (valCol & 0x00ff);

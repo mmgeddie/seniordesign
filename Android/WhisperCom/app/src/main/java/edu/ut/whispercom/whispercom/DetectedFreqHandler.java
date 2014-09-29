@@ -80,7 +80,11 @@ public class DetectedFreqHandler implements Goertzel.FrequenciesDetectedHandler 
                     String number = ""+DTMF.DTMF_CHARACTERS[rowIndex][colIndex];
 					System.out.println(number);
                     activity.receiveLog.add(DTMF.DTMF_CHARACTERS[rowIndex][colIndex]);
-                    UpdateTextView updateFiltered = new UpdateTextView(activity.receiveLog.toString(), textViewReceiveFilterLog);
+                    String filteredLog = activity.receiveLog.toString();
+                    if (filteredLog.length() > 84) {
+                        filteredLog = filteredLog.substring(filteredLog.length()-84, filteredLog.length());
+                    }
+                    UpdateTextView updateFiltered = new UpdateTextView(filteredLog, textViewReceiveFilterLog);
                     activity.runOnUiThread(updateFiltered);
 				}
 			}
