@@ -33,7 +33,7 @@ public class Listner {
     private final int stepSize = 3584;
 
     private final int sampleRate = 44100;
-//    private final int sampleRate = 8000;1800
+//    private final int sampleRate = 8000;
 
 //    private final double frequency[] ={770, 1336, 18000, 18010, 18500,18750,19000,19250,19500,19750,20000};
     private double frequency[];

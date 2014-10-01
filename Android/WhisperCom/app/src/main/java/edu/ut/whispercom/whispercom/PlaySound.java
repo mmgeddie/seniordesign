@@ -15,7 +15,7 @@ public class PlaySound {
     // originally from http://marblemice.blogspot.com/2010/04/generate-and-play-tone-in-android.html
     // and modified by Steve Pomeroy <steve@staticfree.info>
     private final int duration = 1; // seconds
-    private final int sampleRate = 44100;
+    private final int sampleRate = AudioTrack.getNativeOutputSampleRate(AudioManager.STREAM_MUSIC);
     private final int numSamples = duration * sampleRate;
     private final double sampleRow[] = new double[numSamples];
     private final double sampleCol[] = new double[numSamples];
@@ -79,17 +79,18 @@ public class PlaySound {
         // convert to 16 bit pcm sound array
         // assumes the sampleRow buffer is normalised.
         int idx = 0;
-        int ramp = numSamples / 20 ;
+        int ramp = numSamples / 5 ;
         for (int i = 0; i < numSamples; ++i) {
             final double dRowVal = sampleRow[i];
             final double dColVal = sampleCol[i];
-            // scale to maximum amplitude
+
             final short valRow;
             final short valCol;
             if (i < ramp) {
                 valRow = (short) ((dRowVal * 32767 * i/ramp));
                 valCol = (short) ((dColVal * 32767 * i/ramp));
             } else if (i < numSamples - ramp) {
+                // scale to maximum amplitude
                 valRow = (short) ((dRowVal * 32767));
                 valCol = (short) ((dColVal * 32767));
             } else {
@@ -112,16 +113,24 @@ public class PlaySound {
         final AudioTrack audioTrackRow = new AudioTrack(AudioManager.STREAM_MUSIC,
                 sampleRate, AudioFormat.CHANNEL_OUT_MONO,
                 AudioFormat.ENCODING_PCM_16BIT, numSamples,
-                AudioTrack.MODE_STATIC);
+                AudioTrack.MODE_STREAM);
         audioTrackRow.write(generatedRowSnd, 0, generatedRowSnd.length);
 
         final AudioTrack audioTrackCol = new AudioTrack(AudioManager.STREAM_MUSIC,
                 sampleRate, AudioFormat.CHANNEL_OUT_MONO,
                 AudioFormat.ENCODING_PCM_16BIT, numSamples,
-                AudioTrack.MODE_STATIC);
+                AudioTrack.MODE_STREAM);
         audioTrackCol.write(generatedColSnd, 0, generatedColSnd.length);
 
         audioTrackRow.play();
         audioTrackCol.play();
+
+        try {
+            Thread.sleep(1000);
+        } catch(InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
+        audioTrackRow.release();
+        audioTrackCol.release();
     }
 }
