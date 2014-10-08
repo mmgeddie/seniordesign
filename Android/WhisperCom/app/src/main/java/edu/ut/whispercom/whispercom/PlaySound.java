@@ -126,7 +126,7 @@ public class PlaySound {
         audioTrackCol.play();
 
         try {
-            Thread.sleep(1000);
+            Thread.sleep(200);
         } catch(InterruptedException ex) {
             Thread.currentThread().interrupt();
         }

@@ -41,8 +41,7 @@ public class GoertzelImpl implements AudioProcessor {
 
 	private final FrequenciesDetectedHandler handler;
 
-	public GoertzelImpl(final float audioSampleRate, final int bufferSize,
-			double[] frequencies, FrequenciesDetectedHandler frequenciesDetectedHandler) {
+	public GoertzelImpl(final float audioSampleRate, double[] frequencies, FrequenciesDetectedHandler frequenciesDetectedHandler) {
 
 		frequenciesToDetect = frequencies;
 		precalculatedCosines = new double[frequencies.length];

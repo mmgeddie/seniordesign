@@ -29,13 +29,10 @@ public class Listner {
 	/**
 	 * 
 	 */
-//	private final int stepSize = 256*4;
-    private final int stepSize = 3584;
 
     private final int sampleRate = 44100;
 //    private final int sampleRate = 8000;
 
-//    private final double frequency[] ={770, 1336, 18000, 18010, 18500,18750,19000,19250,19500,19750,20000};
     private double frequency[];
 
     private AudioProcessor goertzelAudioProcessor;
@@ -49,7 +46,7 @@ public class Listner {
             frequency[MyActivity.rowFreqs.length + i] = MyActivity.colFreqs[i];
         }
 
-        goertzelAudioProcessor = new GoertzelImpl(sampleRate, stepSize, frequency, new DetectedFreqHandler(activity));
+        goertzelAudioProcessor = new GoertzelImpl(sampleRate, frequency, new DetectedFreqHandler(activity));
 
 		process();
 	}
@@ -60,7 +57,10 @@ public class Listner {
 	public void process(){
         AudioDispatcher dispatcher = null;
         try {
-            dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(sampleRate, stepSize, 0);
+            final int minBufferSize = AudioRecord.getMinBufferSize(sampleRate,
+                    android.media.AudioFormat.CHANNEL_IN_MONO,
+                    android.media.AudioFormat.ENCODING_PCM_16BIT);
+            dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(sampleRate, minBufferSize, 0);
             dispatcher.addAudioProcessor(goertzelAudioProcessor);
             new Thread(dispatcher).start();
         } catch (Exception e) {

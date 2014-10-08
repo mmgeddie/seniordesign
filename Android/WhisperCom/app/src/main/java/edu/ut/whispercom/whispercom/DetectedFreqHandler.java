@@ -68,13 +68,13 @@ public class DetectedFreqHandler implements Goertzel.FrequenciesDetectedHandler 
 			if (frequencies.length == 2) {
 				int rowIndex = -1;
 				int colIndex = -1;
-				for (int i = 0; i < 4; i++) {
+				for (int i = 0; i < MyActivity.rowFreqs.length; i++) {
 					if (frequencies[0] == allFrequencies[i] || frequencies[1] == allFrequencies[i])
 						rowIndex = i;
 				}
-				for (int i = 4; i < allFrequencies.length; i++) {
+				for (int i = MyActivity.rowFreqs.length; i < allFrequencies.length; i++) {
 					if (frequencies[0] == allFrequencies[i] || frequencies[1] == allFrequencies[i])
-						colIndex = i-4;
+						colIndex = i-(MyActivity.rowFreqs.length);
 				}
 				if(rowIndex>=0 && colIndex>=0){
                     String number = ""+DTMF.DTMF_CHARACTERS[rowIndex][colIndex];

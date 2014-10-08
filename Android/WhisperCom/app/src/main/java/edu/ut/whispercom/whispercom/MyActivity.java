@@ -17,8 +17,12 @@ public class MyActivity extends ActionBarActivity {
 //    final static int[] rowFreqs = {697, 770, 852, 941};
 //    final static int[] colFreqs = {1209, 1336, 1477, 1633};
 
-    final static int[] rowFreqs = {18000, 18250, 18500, 18750};
-    final static int[] colFreqs = {19000, 19250, 19500, 19750};
+//    final static int[] rowFreqs = {18000, 18250, 18500, 18750};
+//    final static int[] colFreqs = {19000, 19250, 19500, 19750};
+
+    final static int[] rowFreqs = {18000, 18200, 18400, 18600, 18800};
+    final static int[] colFreqs = {19200, 19400, 19600, 19800, 20000};
+
     List<String> transmitLog = new ArrayList<String>();
     List<Character> receiveLog = new ArrayList<Character>();
 
