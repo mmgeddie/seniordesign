@@ -77,9 +77,6 @@ public class DetectedFreqHandler implements Goertzel.FrequenciesDetectedHandler 
 						colIndex = i-(MyActivity.rowFreqs.length);
 				}
 				if(rowIndex>=0 && colIndex>=0){
-                    String number = ""+DTMF.DTMF_CHARACTERS[rowIndex][colIndex];
-					System.out.println(number);
-                    activity.receiveLog.add(DTMF.DTMF_CHARACTERS[rowIndex][colIndex]);
                     String filteredLog = activity.receiveLog.toString();
                     if (filteredLog.length() > 84) {
                         filteredLog = filteredLog.substring(filteredLog.length()-84, filteredLog.length());
