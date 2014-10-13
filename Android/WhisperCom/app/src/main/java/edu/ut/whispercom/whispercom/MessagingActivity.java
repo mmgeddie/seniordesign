@@ -47,7 +47,7 @@ public class MessagingActivity extends ActionBarActivity {
             return;
         }
 
-        //Here is where you will actually send the message throught Sinch
+        
         Toast.makeText(this, "Sending message! recipientId: " + recipientId
                 + " Message: " + messageBody, Toast.LENGTH_LONG).show();
         messageBodyField.setText("");
