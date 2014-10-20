@@ -1,8 +1,14 @@
 package edu.ut.whispercom.whispercom;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Message;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,30 +22,76 @@ import android.widget.Toast;
 
 public class MessagingActivity extends ActionBarActivity {
     private Button sendButton;
+    private Button okButton;
     private EditText messageBodyField;
+    private EditText unField;
     private String messageBody;
     private int recipientId;
+    private String username;
     MessageAdapter messageAdapter;
     ListView messagesList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.name_dialog);
+        final Dialog dialog = new Dialog(this);
+
         setContentView(R.layout.messaging);
-        recipientId=0;
-        messagesList= (ListView) findViewById(R.id.listMessages);
+        recipientId = 0;
+        username = "Anonymous";
+        messagesList = (ListView) findViewById(R.id.listMessages);
         messageAdapter = new MessageAdapter(this);
         messagesList.setAdapter(messageAdapter);
         sendButton = (Button) findViewById(R.id.sendButton);
-
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 sendMsg();
             }
         });
+
+
+        createUNDialog();
+
     }
 
-    protected void sendMsg(){
+    private Context getContext() {
+        return this;
+    }
+
+    protected void createUNDialog() {
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View dialogview = inflater.inflate(R.layout.name_dialog, null);
+        final AlertDialog d = new AlertDialog.Builder(this)
+                .setTitle("Set Username")
+                .setView(dialogview)
+                .setPositiveButton("Enter", null)
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .create();
+        d.setOnShowListener(new DialogInterface.OnShowListener(){
+            public void onShow(DialogInterface dialog){
+                Button b = d.getButton(AlertDialog.BUTTON_POSITIVE);
+                b.setOnClickListener(new View.OnClickListener(){
+                    public void onClick(View view){
+                        unField = (EditText) d.findViewById(R.id.username);
+                        username = unField.getText().toString();
+                        if (username.isEmpty()==false) {
+                            d.dismiss();
+                        }
+                    }
+                });
+            }
+        });
+        d.show();
+    }
+
+    protected void sendMsg() {
         messageBodyField = (EditText) findViewById(R.id.messageBodyField);
         messageBody = messageBodyField.getText().toString();
         if (messageBody.isEmpty()) {
@@ -47,11 +99,13 @@ public class MessagingActivity extends ActionBarActivity {
             return;
         }
 
-        
+        //Here is where you will actually send the message throught Sinch
         Toast.makeText(this, "Sending message! recipientId: " + recipientId
                 + " Message: " + messageBody, Toast.LENGTH_LONG).show();
         messageBodyField.setText("");
         messageAdapter.addMessage(messageBody, MessageAdapter.DIRECTION_OUTGOING);
+        messageBody = username + ": " + messageBody;
+        messageAdapter.addMessage(messageBody, MessageAdapter.DIRECTION_INCOMING);
     }
 
 
@@ -68,9 +122,13 @@ public class MessagingActivity extends ActionBarActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+        if (id == R.id.change_un) {
+            createUNDialog();
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
+
+
+
 }

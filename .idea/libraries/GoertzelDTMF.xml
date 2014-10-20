@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="GoertzelDTMF">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/GoertzelDTMF/TarsosDSP-latest.jar!/" />
+      <root url="jar://$PROJECT_DIR$/GoertzelDTMF/GoertzelDTMF.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -4,5 +4,6 @@
     <string name="app_name">WhisperCom</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="username">Enter Username</string>
 
 </resources>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/JUCE/extras/Demo/Builds/Android/Android.iml" filepath="$PROJECT_DIR$/JUCE/extras/Demo/Builds/Android/Android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/GoertzelDTMF/GoertzelDTMF.iml" filepath="$PROJECT_DIR$/GoertzelDTMF/GoertzelDTMF.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Android/WhisperCom/app/src/androidTest/androidTest.iml" filepath="$PROJECT_DIR$/Android/WhisperCom/app/src/androidTest/androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Android/WhisperCom/app/src/main/main.iml" filepath="$PROJECT_DIR$/Android/WhisperCom/app/src/main/main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/JUCE/modules/juce_core/native/native.iml" filepath="$PROJECT_DIR$/JUCE/modules/juce_core/native/native.iml" />
+    </modules>
+  </component>
+</project>
+
