@@ -37,7 +37,7 @@ public class Listner {
 
     private AudioProcessor goertzelAudioProcessor;
 
-	public Listner(MyActivity activity){
+	public Listner(MessagingActivity activity){
         frequency = new double[MyActivity.colFreqs.length+MyActivity.rowFreqs.length];
         for (int i = 0; i< MyActivity.rowFreqs.length; i++) {
             frequency[i] = MyActivity.rowFreqs[i];

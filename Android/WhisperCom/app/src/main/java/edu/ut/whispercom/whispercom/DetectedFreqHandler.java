@@ -14,76 +14,84 @@ import be.tarsos.dsp.pitch.Goertzel;
  * Created by matt on 9/28/14.
  */
 public class DetectedFreqHandler implements Goertzel.FrequenciesDetectedHandler {
-    private MyActivity activity;
-    private TextView textViewReceiveAllMonitor;
-    private TextView textViewReceiveFilterLog;
+    private MessagingActivity activity;
+    private int lastVal = -1;
+    private boolean betweenStartStop = false;
 
-    public DetectedFreqHandler(MyActivity activity) {
+    private static long lastMs = java.lang.System.currentTimeMillis();
+
+
+    public DetectedFreqHandler(MessagingActivity activity) {
         this.activity = activity;
-        textViewReceiveAllMonitor = (TextView)activity.findViewById(R.id.textViewReceiveAllMonitor);
-        textViewReceiveFilterLog = (TextView)activity.findViewById(R.id.textViewReceiveFilterLog);
     }
-
-//    @Override
-//    public void handleDetectedFrequencies2(final double[] frequencies, final double[] powers, final double[] allFrequencies, final double allPowers[]) {
-//        System.out.println("All freq: "+ Arrays.toString(frequencies));
-//        UpdateTextView updateAll = new UpdateTextView(Arrays.toString(frequencies), textViewReceiveAllMonitor);
-//        activity.runOnUiThread(updateAll);
-//        if (frequencies.length >= 2) {
-//            double f1 = 0;
-//            double f2 = 0;
-//            double highestPower = 0;
-//            for (int i = 0; i < powers.length; i++) {
-//                if (powers[i] > highestPower) {
-//                    f2 = f1;
-//                    f1 = frequencies[i];
-//                }
-//            }
-//            System.out.println("["+f1+"] ["+f2+"]");
-//            int rowIndex = -1;
-//            int colIndex = -1;
-//            for (int i = 0; i < 4; i++) {
-//                if (f1 == allFrequencies[i] || f2 == allFrequencies[i])
-//                    rowIndex = i;
-//            }
-//            for (int i = 4; i < allFrequencies.length; i++) {
-//                if (f1 == allFrequencies[i] || f2 == allFrequencies[i])
-//                    colIndex = i-4;
-//            }
-//            if(rowIndex>=0 && colIndex>=0){
-//                System.out.println(""+ DTMF.DTMF_CHARACTERS[rowIndex][colIndex]);
-//
-//                String number = ""+DTMF.DTMF_CHARACTERS[rowIndex][colIndex];
-//                UpdateTextView updateFilter = new UpdateTextView(number, textViewReceiveFilterLog);
-//                activity.runOnUiThread(updateFilter);
-//            }
-//        }
-//    }
 
     @Override
     public void handleDetectedFrequencies(final double[] frequencies, final double[] powers, final double[] allFrequencies, final double allPowers[]) {
 			System.out.println(Arrays.toString(frequencies));
-            UpdateTextView updateAll = new UpdateTextView(Arrays.toString(frequencies), textViewReceiveAllMonitor);
-            activity.runOnUiThread(updateAll);
-			if (frequencies.length == 2) {
-				int rowIndex = -1;
-				int colIndex = -1;
-				for (int i = 0; i < MyActivity.rowFreqs.length; i++) {
-					if (frequencies[0] == allFrequencies[i] || frequencies[1] == allFrequencies[i])
-						rowIndex = i;
-				}
-				for (int i = MyActivity.rowFreqs.length; i < allFrequencies.length; i++) {
-					if (frequencies[0] == allFrequencies[i] || frequencies[1] == allFrequencies[i])
-						colIndex = i-(MyActivity.rowFreqs.length);
-				}
-				if(rowIndex>=0 && colIndex>=0){
-                    String filteredLog = activity.receiveLog.toString();
-                    if (filteredLog.length() > 84) {
-                        filteredLog = filteredLog.substring(filteredLog.length()-84, filteredLog.length());
+            System.out.println(Arrays.toString(powers));
+            if (frequencies.length >= 2) {
+                int high1index = 0;
+                double high1power = 0;
+                int high2index = 0;
+                double high2power = 0;
+                int high3index = 0;
+                double high3power = 0;
+                for (int i = 0; i < frequencies.length; i++) {
+                    if (powers[i]>high1power) {
+                        high3index = high2index;
+                        high3power = high2power;
+                        high2index = high1index;
+                        high2power = high1power;
+                        high1index = i;
+                        high1power = powers[i];
+                    } else if (powers[i]>high2power) {
+                        high3index = high2index;
+                        high3power = high2power;
+                        high2index = i;
+                        high2power = powers[i];
+                    } else if (powers[i]>high3power) {
+                        high3index = i;
+                        high3power = powers[i];
                     }
-                    UpdateTextView updateFiltered = new UpdateTextView(filteredLog, textViewReceiveFilterLog);
-                    activity.runOnUiThread(updateFiltered);
-				}
+                }
+                System.out.println("1:"+frequencies[high1index]+":"+high1power+" "+"2:"+frequencies[high2index]+":"+high2power+" "+"3:"+frequencies[high3index]+":"+high3power);
+			    if (high1power > high3power + 10 && high2power > high3power + 10) {
+                    int rowIndex = -1;
+                    int colIndex = -1;
+                    for (int i = 0; i < MyActivity.rowFreqs.length; i++) {
+                        if (frequencies[high1index] == allFrequencies[i] || frequencies[high2index] == allFrequencies[i])
+                            rowIndex = i;
+                    }
+                    for (int i = MyActivity.rowFreqs.length; i < allFrequencies.length; i++) {
+                        if (frequencies[high1index] == allFrequencies[i] || frequencies[high2index] == allFrequencies[i])
+                            colIndex = i-(MyActivity.rowFreqs.length);
+                    }
+                    if(rowIndex>=0 && colIndex>=0){
+                        int val = colIndex + (rowIndex * MyActivity.colFreqs.length);
+                        System.out.println("Detected index: "+ val);
+                        if (val == 16) {
+                            activity.receiveLog = new ArrayList<Integer>();
+                            betweenStartStop = true;
+                        } else if (val == 19) {
+                            if (betweenStartStop) {
+                                betweenStartStop = false;
+                                ReceiveMessage updateFiltered = new ReceiveMessage(activity, Arrays.toString(activity.receiveLog.toArray()) + " = " + EncodeDecode.decode(activity.receiveLog));
+                                activity.runOnUiThread(updateFiltered);
+                                activity.receiveLog = new ArrayList<Integer>();
+                            } else {
+                                System.out.println("Received not between startStop:" + Arrays.toString(activity.receiveLog.toArray()));
+                            }
+                        } else {
+                            if (val != lastVal) {
+                                activity.receiveLog.add(val);
+                                long currMs = java.lang.System.currentTimeMillis();
+                                System.out.println("Time since last val: " + (currMs - lastMs));
+                                lastMs = currMs;
+                            }
+                            lastVal = val;
+                        }
+                    }
+                }
 			}
 		}
 

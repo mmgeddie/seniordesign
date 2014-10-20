@@ -5,74 +5,32 @@ import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.os.Handler;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Created by matt on 9/28/14.
  */
 public class PlaySound {
     // originally from http://marblemice.blogspot.com/2010/04/generate-and-play-tone-in-android.html
     // and modified by Steve Pomeroy <steve@staticfree.info>
-    private final int duration = 1; // seconds
-    private final int sampleRate = AudioTrack.getNativeOutputSampleRate(AudioManager.STREAM_MUSIC);
-    private final int numSamples = duration * sampleRate;
-    private final double sampleRow[] = new double[numSamples];
-    private final double sampleCol[] = new double[numSamples];
-    private final double freqOfRowTone; // hz
-    private final double freqOfColTone; // hz
-    private final int[] rowFreqs = MyActivity.rowFreqs;
-    private final int[] colFreqs = MyActivity.colFreqs;
+    private final static int duration = 1; // seconds
+    private final static int sampleRate = AudioTrack.getNativeOutputSampleRate(AudioManager.STREAM_MUSIC);
+    private final static int numSamples = (duration * sampleRate)/4;
+    private final static double sampleRow[] = new double[numSamples];
+    private final static double sampleCol[] = new double[numSamples];
+    private static double freqOfRowTone; // hz
+    private static double freqOfColTone; // hz
+    private final static int[] rowFreqs = MyActivity.rowFreqs;
+    private final static int[] colFreqs = MyActivity.colFreqs;
+    private final static AudioTrack audioTrackRow = new AudioTrack(AudioManager.STREAM_MUSIC,
+            sampleRate, AudioFormat.CHANNEL_OUT_MONO,
+            AudioFormat.ENCODING_PCM_16BIT, numSamples,
+            AudioTrack.MODE_STREAM);
 
-    private final byte generatedRowSnd[] = new byte[2 * numSamples];
-    private final byte generatedColSnd[] = new byte[2 * numSamples];
 
-    Handler handler = new Handler();
-
-    PlaySound(String buttonText) {
-        Map<String, int[]> toneMap = new HashMap<String, int[]>();
-        toneMap.put("1", new int[]{0, 0});
-        toneMap.put("2", new int[]{0, 1});
-        toneMap.put("3", new int[]{0, 2});
-        toneMap.put("A", new int[]{0, 3});
-        toneMap.put("4", new int[]{1, 0});
-        toneMap.put("5", new int[]{1, 1});
-        toneMap.put("6", new int[]{1, 2});
-        toneMap.put("B", new int[]{1, 3});
-        toneMap.put("7", new int[]{2, 0});
-        toneMap.put("8", new int[]{2, 1});
-        toneMap.put("9", new int[]{2, 2});
-        toneMap.put("C", new int[]{2, 3});
-        toneMap.put("*", new int[]{3, 0});
-        toneMap.put("0", new int[]{3, 1});
-        toneMap.put("#", new int[]{3, 2});
-        toneMap.put("D", new int[]{3, 3});
-
-        this.freqOfRowTone = rowFreqs[toneMap.get(buttonText)[0]];
-        this.freqOfColTone = colFreqs[toneMap.get(buttonText)[1]];
-        create();
-    }
-
-    protected void create() {
-        // Use a new tread as this can take a while
-        final Thread thread = new Thread(new Runnable() {
-            public void run() {
-                genTone();
-                handler.post(new Runnable() {
-
-                    public void run() {
-                        playSound();
-                    }
-                });
-            }
-        });
-        thread.start();
-    }
-
-    void genTone(){
+    static byte[] genTone(){
+        final byte generatedSnd[] = new byte[2 * numSamples];
         // fill out the array
         for (int i = 0; i < numSamples; ++i) {
-            sampleRow[i] = Math.sin(2 * Math.PI * i / (sampleRate/freqOfRowTone));
+            sampleRow[i] = (Math.sin(2 * Math.PI * i / (sampleRate/freqOfRowTone)) + Math.sin(2 * Math.PI * i / (sampleRate/freqOfColTone))) /2;
             sampleCol[i] = Math.sin(2 * Math.PI * i / (sampleRate/freqOfColTone));
         }
 
@@ -84,53 +42,37 @@ public class PlaySound {
             final double dRowVal = sampleRow[i];
             final double dColVal = sampleCol[i];
 
-            final short valRow;
-            final short valCol;
+            final short val;
             if (i < ramp) {
-                valRow = (short) ((dRowVal * 32767 * i/ramp));
-                valCol = (short) ((dColVal * 32767 * i/ramp));
+                val = (short) ((dRowVal * 32767 * i/ramp));
             } else if (i < numSamples - ramp) {
                 // scale to maximum amplitude
-                valRow = (short) ((dRowVal * 32767));
-                valCol = (short) ((dColVal * 32767));
+                val = (short) ((dRowVal * 32767));
             } else {
-                valRow = (short) ((dRowVal * 32767 * (numSamples-i)/ramp ));
-                valCol = (short) ((dColVal * 32767 * (numSamples-i)/ramp ));
+                val = (short) ((dRowVal * 32767 * (numSamples-i)/ramp ));
             }
             // in 16 bit wav PCM, first byte is the low order byte
-            generatedRowSnd[idx] = (byte) (valRow & 0x00ff);
-            generatedColSnd[idx] = (byte) (valCol & 0x00ff);
+            generatedSnd[idx] = (byte) (val & 0x00ff);
             idx++;
 
-            generatedRowSnd[idx] = (byte) ((valRow & 0xff00) >>> 8);
-            generatedColSnd[idx] = (byte) ((valCol & 0xff00) >>> 8);
+            generatedSnd[idx] = (byte) ((val & 0xff00) >>> 8);
             idx++;
 
         }
+        return generatedSnd;
     }
 
-    void playSound(){
-        final AudioTrack audioTrackRow = new AudioTrack(AudioManager.STREAM_MUSIC,
-                sampleRate, AudioFormat.CHANNEL_OUT_MONO,
-                AudioFormat.ENCODING_PCM_16BIT, numSamples,
-                AudioTrack.MODE_STREAM);
-        audioTrackRow.write(generatedRowSnd, 0, generatedRowSnd.length);
+    public static void playSound(int index) {
+        freqOfRowTone = rowFreqs[index / colFreqs.length];
+        freqOfColTone = colFreqs[index % colFreqs.length];
+        writeSound(genTone());
+        writeSound(new byte[numSamples]);
+    }
 
-        final AudioTrack audioTrackCol = new AudioTrack(AudioManager.STREAM_MUSIC,
-                sampleRate, AudioFormat.CHANNEL_OUT_MONO,
-                AudioFormat.ENCODING_PCM_16BIT, numSamples,
-                AudioTrack.MODE_STREAM);
-        audioTrackCol.write(generatedColSnd, 0, generatedColSnd.length);
+    private static void writeSound(byte generatedSnd[]){
+
+        audioTrackRow.write(generatedSnd, 0, generatedSnd.length);
 
         audioTrackRow.play();
-        audioTrackCol.play();
-
-        try {
-            Thread.sleep(200);
-        } catch(InterruptedException ex) {
-            Thread.currentThread().interrupt();
-        }
-        audioTrackRow.release();
-        audioTrackCol.release();
     }
 }

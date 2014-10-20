@@ -19,6 +19,10 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 
 public class MessagingActivity extends ActionBarActivity {
     private Button sendButton;
@@ -30,6 +34,7 @@ public class MessagingActivity extends ActionBarActivity {
     private String username;
     MessageAdapter messageAdapter;
     ListView messagesList;
+    List<Integer> receiveLog = new ArrayList<Integer>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +55,7 @@ public class MessagingActivity extends ActionBarActivity {
                 sendMsg();
             }
         });
-
+        Listner listner = new Listner(this);
 
         createUNDialog();
 
@@ -103,9 +108,20 @@ public class MessagingActivity extends ActionBarActivity {
         Toast.makeText(this, "Sending message! recipientId: " + recipientId
                 + " Message: " + messageBody, Toast.LENGTH_LONG).show();
         messageBodyField.setText("");
+
         messageAdapter.addMessage(messageBody, MessageAdapter.DIRECTION_OUTGOING);
         messageBody = username + ": " + messageBody;
         messageAdapter.addMessage(messageBody, MessageAdapter.DIRECTION_INCOMING);
+
+        int[] out = EncodeDecode.encode(messageBody);
+        messageAdapter.addMessage(Arrays.toString(out) + " = " + messageBody, MessageAdapter.DIRECTION_OUTGOING);
+        for (int i : out) {
+            PlaySound.playSound(i);
+        }
+    }
+
+    protected void receiveMsg(String message){
+        messageAdapter.addMessage(message, MessageAdapter.DIRECTION_INCOMING);
     }
 
 
