@@ -35,6 +35,7 @@ public class MessagingActivity extends ActionBarActivity {
     MessageAdapter messageAdapter;
     ListView messagesList;
     List<Integer> receiveLog = new ArrayList<Integer>();
+    private boolean transmitReceive = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,9 +116,20 @@ public class MessagingActivity extends ActionBarActivity {
 
         int[] out = EncodeDecode.encode(messageBody);
         messageAdapter.addMessage(Arrays.toString(out) + " = " + messageBody, MessageAdapter.DIRECTION_OUTGOING);
-        for (int i : out) {
-            PlaySound.playSound(i);
+        class MessagePlayer implements Runnable {
+            int[] message;
+            MessagePlayer(int[] message) { this.message = message; }
+            public void run() {
+//                setTransmitReceive(false);
+                for (int i : message) {
+                    PlaySound.playSound(i);
+                }
+//                setTransmitReceive(true);
+            }
         }
+        Thread t = new Thread(new MessagePlayer(out));
+        t.start();
+
     }
 
     protected void receiveMsg(String message){
@@ -145,6 +157,14 @@ public class MessagingActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public void setTransmitReceive(boolean transmitReceive) {
+        this.transmitReceive = transmitReceive;
+        if (transmitReceive) {
+            sendButton.setEnabled(false);
+        } else {
+            sendButton.setEnabled(true);
+        }
+    }
 
 
 }

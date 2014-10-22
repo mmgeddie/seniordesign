@@ -52,12 +52,19 @@ public class EncodeDecode {
                 iterator.remove();
             }
         }
+        int a = in.get(0);
+        int b = in.get(1);
+        int length = a << 4;
+        length = length + b;
         for (int i = 2; i < in.size() - 1 ; i = i+2) {
-            int a = in.get(i);
-            int b = in.get(i+1);
+            a = in.get(i);
+            b = in.get(i+1);
             int c = a << 4;
             c = c + b;
             sb.append((char)c);
+        }
+        if (sb.length() != length) {
+            return "Decode Error, length invalid";
         }
         return sb.toString();
     }
