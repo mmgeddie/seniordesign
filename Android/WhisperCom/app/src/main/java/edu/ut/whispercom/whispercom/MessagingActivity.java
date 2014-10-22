@@ -109,22 +109,24 @@ public class MessagingActivity extends ActionBarActivity {
         Toast.makeText(this, "Sending message! recipientId: " + recipientId
                 + " Message: " + messageBody, Toast.LENGTH_LONG).show();
         messageBodyField.setText("");
-
-        messageAdapter.addMessage(messageBody, MessageAdapter.DIRECTION_OUTGOING);
         messageBody = username + ": " + messageBody;
-        messageAdapter.addMessage(messageBody, MessageAdapter.DIRECTION_INCOMING);
 
         int[] out = EncodeDecode.encode(messageBody);
-        messageAdapter.addMessage(Arrays.toString(out) + " = " + messageBody, MessageAdapter.DIRECTION_OUTGOING);
+//        messageAdapter.addMessage(Arrays.toString(out) + " = " + messageBody, MessageAdapter.DIRECTION_OUTGOING);
+        messageAdapter.addMessage(messageBody, MessageAdapter.DIRECTION_OUTGOING);
+        setTransmitReceive(true);
         class MessagePlayer implements Runnable {
             int[] message;
             MessagePlayer(int[] message) { this.message = message; }
             public void run() {
-//                setTransmitReceive(false);
                 for (int i : message) {
                     PlaySound.playSound(i);
                 }
-//                setTransmitReceive(true);
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        setTransmitReceive(false);
+                    }
+                });
             }
         }
         Thread t = new Thread(new MessagePlayer(out));

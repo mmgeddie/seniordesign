@@ -69,13 +69,24 @@ public class DetectedFreqHandler implements Goertzel.FrequenciesDetectedHandler 
                     if(rowIndex>=0 && colIndex>=0){
                         int val = colIndex + (rowIndex * MyActivity.colFreqs.length);
                         System.out.println("Detected index: "+ val);
-                        if (val == 16) {
+                        if (val == 16) { // Start tone
                             activity.receiveLog = new ArrayList<Integer>();
                             betweenStartStop = true;
-                        } else if (val == 19) {
+                            activity.runOnUiThread(new Runnable() {
+                                public void run() {
+                                    activity.setTransmitReceive(true);
+                                }
+                            });
+                        } else if (val == 19) { // Stop tone
                             if (betweenStartStop) {
+                                activity.runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        activity.setTransmitReceive(false);
+                                    }
+                                });
                                 betweenStartStop = false;
-                                ReceiveMessage updateFiltered = new ReceiveMessage(activity, Arrays.toString(activity.receiveLog.toArray()) + " = " + EncodeDecode.decode(activity.receiveLog));
+//                                ReceiveMessage updateFiltered = new ReceiveMessage(activity, Arrays.toString(activity.receiveLog.toArray()) + " = " + EncodeDecode.decode(activity.receiveLog));
+                                ReceiveMessage updateFiltered = new ReceiveMessage(activity, EncodeDecode.decode(activity.receiveLog));
                                 activity.runOnUiThread(updateFiltered);
                                 activity.receiveLog = new ArrayList<Integer>();
                             } else {
