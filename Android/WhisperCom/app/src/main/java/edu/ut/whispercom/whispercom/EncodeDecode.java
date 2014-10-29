@@ -68,7 +68,7 @@ public class EncodeDecode {
         System.out.println("Output array:" + Arrays.toString(out));
         return out;
     }
-    public static String decode(List<Integer> in) {
+    public static String decode(MessagingActivity activity, List<Integer> in) {
         StringBuilder sb = new StringBuilder();
         for (Iterator<Integer> iterator = in.iterator(); iterator.hasNext();) {
             Integer i = iterator.next();
@@ -96,11 +96,9 @@ public class EncodeDecode {
             c = c + b;
             sb.append((char)c);
         }
-        if (sb.length() != length) {
-            return "Decode Error, length invalid";
-        }
-        if (checksum != (CRC8.calc(sb.toString().getBytes(), sb.length()) & 0xFF)) {
-            return "Error: Checksum is invalid";
+        if ((sb.length() != length) || (checksum != (CRC8.calc(sb.toString().getBytes(), sb.length()) & 0xFF))) {
+            activity.playMessage(new int[]{18});
+            return "Error, requesting retransmission";
         }
         return sb.toString();
     }

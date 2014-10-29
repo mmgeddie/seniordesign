@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 
@@ -32,10 +33,14 @@ public class MessagingActivity extends ActionBarActivity {
     private String messageBody;
     private int recipientId;
     private String username;
+    private boolean transmitReceive = false;
+    private Listner listner;
     MessageAdapter messageAdapter;
     ListView messagesList;
     List<Integer> receiveLog = new ArrayList<Integer>();
-    private boolean transmitReceive = false;
+    Date lastRecieved  = new Date(Long.MIN_VALUE + 1);
+    Date lastSent = new Date(Long.MIN_VALUE);
+    int[] lastMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +61,7 @@ public class MessagingActivity extends ActionBarActivity {
                 sendMsg();
             }
         });
-        Listner listner = new Listner(this);
+        listner = new Listner(this);
 
         createUNDialog();
 
@@ -114,23 +119,10 @@ public class MessagingActivity extends ActionBarActivity {
         int[] out = EncodeDecode.encode(messageBody);
 //        messageAdapter.addMessage(Arrays.toString(out) + " = " + messageBody, MessageAdapter.DIRECTION_OUTGOING);
         messageAdapter.addMessage(messageBody, MessageAdapter.DIRECTION_OUTGOING);
-        setTransmitReceive(true);
-        class MessagePlayer implements Runnable {
-            int[] message;
-            MessagePlayer(int[] message) { this.message = message; }
-            public void run() {
-                for (int i : message) {
-                    PlaySound.playSound(i);
-                }
-                runOnUiThread(new Runnable() {
-                    public void run() {
-                        setTransmitReceive(false);
-                    }
-                });
-            }
-        }
-        Thread t = new Thread(new MessagePlayer(out));
-        t.start();
+
+        playMessage(out);
+        lastMessage = out;
+        lastSent = new Date();
 
     }
 
@@ -166,6 +158,32 @@ public class MessagingActivity extends ActionBarActivity {
         } else {
             sendButton.setEnabled(true);
         }
+    }
+
+    public void playMessage(int[] message) {
+        runOnUiThread(new Runnable() {
+            public void run() {
+                setTransmitReceive(true);
+            }
+        });
+        listner.stopProcessing();
+        class MessagePlayer implements Runnable {
+            int[] message;
+            MessagePlayer(int[] message) { this.message = message; }
+            public void run() {
+                for (int i : message) {
+                    PlaySound.playSound(i);
+                }
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        setTransmitReceive(false);
+                        listner.process();
+                    }
+                });
+            }
+        }
+        Thread t = new Thread(new MessagePlayer(message));
+        t.start();
     }
 
 

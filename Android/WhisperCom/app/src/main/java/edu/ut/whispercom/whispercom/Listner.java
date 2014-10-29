@@ -37,6 +37,8 @@ public class Listner {
 
     private AudioProcessor goertzelAudioProcessor;
 
+    private AudioDispatcher dispatcher = null;
+
 	public Listner(MessagingActivity activity){
         frequency = new double[MyActivity.colFreqs.length+MyActivity.rowFreqs.length];
         for (int i = 0; i< MyActivity.rowFreqs.length; i++) {
@@ -55,7 +57,7 @@ public class Listner {
 	 * Process a DTMF character: generate sound and decode the sound.
 	 */
 	public void process(){
-        AudioDispatcher dispatcher = null;
+
         try {
             final int minBufferSize = AudioRecord.getMinBufferSize(sampleRate,
                     android.media.AudioFormat.CHANNEL_IN_MONO,
@@ -70,4 +72,10 @@ public class Listner {
         }
 
 	}
+
+    public void stopProcessing() {
+        if (dispatcher != null) {
+            dispatcher.stop();
+        }
+    }
 }

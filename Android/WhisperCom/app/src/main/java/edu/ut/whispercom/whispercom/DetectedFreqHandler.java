@@ -5,6 +5,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import be.tarsos.dsp.pitch.DTMF;
@@ -70,6 +71,7 @@ public class DetectedFreqHandler implements Goertzel.FrequenciesDetectedHandler 
                         int val = colIndex + (rowIndex * MyActivity.colFreqs.length);
                         System.out.println("Detected index: "+ val);
                         if (val == 16) { // Start tone
+                            activity.lastRecieved = new Date();
                             activity.receiveLog = new ArrayList<Integer>();
                             betweenStartStop = true;
                             activity.runOnUiThread(new Runnable() {
@@ -86,13 +88,18 @@ public class DetectedFreqHandler implements Goertzel.FrequenciesDetectedHandler 
                                 });
                                 betweenStartStop = false;
 //                                ReceiveMessage updateFiltered = new ReceiveMessage(activity, Arrays.toString(activity.receiveLog.toArray()) + " = " + EncodeDecode.decode(activity.receiveLog));
-                                ReceiveMessage updateFiltered = new ReceiveMessage(activity, EncodeDecode.decode(activity.receiveLog));
+                                ReceiveMessage updateFiltered = new ReceiveMessage(activity, EncodeDecode.decode(activity, activity.receiveLog));
                                 activity.runOnUiThread(updateFiltered);
                                 activity.receiveLog = new ArrayList<Integer>();
                             } else {
                                 System.out.println("Received not between startStop:" + Arrays.toString(activity.receiveLog.toArray()));
                             }
-                        } else {
+                        } else if (val == 18) {
+                            if (activity.lastRecieved.compareTo(activity.lastSent) < 0) {
+                                activity.playMessage(activity.lastMessage);
+                            }
+                        }
+                        else {
                             if (val != lastVal) {
                                 activity.receiveLog.add(val);
                                 long currMs = java.lang.System.currentTimeMillis();
