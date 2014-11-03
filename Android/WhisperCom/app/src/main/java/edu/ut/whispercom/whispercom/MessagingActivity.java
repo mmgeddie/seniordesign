@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.Message;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -126,8 +125,8 @@ public class MessagingActivity extends ActionBarActivity {
 
     }
 
-    protected void receiveMsg(String message){
-        messageAdapter.addMessage(message, MessageAdapter.DIRECTION_INCOMING);
+    protected Message receiveMsg(){
+        return messageAdapter.addMessage("", MessageAdapter.DIRECTION_INCOMING);
     }
 
 

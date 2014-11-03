@@ -68,38 +68,41 @@ public class EncodeDecode {
         System.out.println("Output array:" + Arrays.toString(out));
         return out;
     }
-    public static String decode(MessagingActivity activity, List<Integer> in) {
-        StringBuilder sb = new StringBuilder();
-        for (Iterator<Integer> iterator = in.iterator(); iterator.hasNext();) {
-            Integer i = iterator.next();
-            if (i == REPEAT) {
-                iterator.remove();
+    public static String decode(MessagingActivity activity, List<Integer> in, boolean finalReceipt) {
+        if (in.size() > 4) {
+            StringBuilder sb = new StringBuilder();
+            for (Iterator<Integer> iterator = in.iterator(); iterator.hasNext();) {
+                Integer i = iterator.next();
+                if (i == REPEAT) {
+                    iterator.remove();
+                }
             }
-        }
-        // get length
-        int a = in.get(0);
-        int b = in.get(1);
-        int length = a << 4;
-        length = length + b;
+            // get length
+            int a = in.get(0);
+            int b = in.get(1);
+            int length = a << 4;
+            length = length + b;
 
-        // get checksum
-        a = in.get(2);
-        b = in.get(3);
-        int checksum = a << 4;
-        checksum = checksum + b;
+            // get checksum
+            a = in.get(2);
+            b = in.get(3);
+            int checksum = a << 4;
+            checksum = checksum + b;
 
-        // get message
-        for (int i = 4; i < in.size() - 1 ; i = i+2) {
-            a = in.get(i);
-            b = in.get(i+1);
-            int c = a << 4;
-            c = c + b;
-            sb.append((char)c);
+            // get message
+            for (int i = 4; i < in.size() - 1 ; i = i+2) {
+                a = in.get(i);
+                b = in.get(i+1);
+                int c = a << 4;
+                c = c + b;
+                sb.append((char)c);
+            }
+            if (finalReceipt && ((sb.length() != length) || (checksum != (CRC8.calc(sb.toString().getBytes(), sb.length()) & 0xFF)))) {
+                activity.playMessage(new int[]{18});
+                return "Error, requesting retransmission";
+            }
+            return sb.toString();
         }
-        if ((sb.length() != length) || (checksum != (CRC8.calc(sb.toString().getBytes(), sb.length()) & 0xFF))) {
-            activity.playMessage(new int[]{18});
-            return "Error, requesting retransmission";
-        }
-        return sb.toString();
+        return "";
     }
 }

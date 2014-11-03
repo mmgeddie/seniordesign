@@ -18,6 +18,7 @@ public class DetectedFreqHandler implements Goertzel.FrequenciesDetectedHandler 
     private MessagingActivity activity;
     private int lastVal = -1;
     private boolean betweenStartStop = false;
+    ReceiveMessage receiveMessage = new ReceiveMessage(activity);
 
     private static long lastMs = java.lang.System.currentTimeMillis();
 
@@ -74,6 +75,7 @@ public class DetectedFreqHandler implements Goertzel.FrequenciesDetectedHandler 
                             activity.lastRecieved = new Date();
                             activity.receiveLog = new ArrayList<Integer>();
                             betweenStartStop = true;
+                            receiveMessage = new ReceiveMessage(activity);
                             activity.runOnUiThread(new Runnable() {
                                 public void run() {
                                     activity.setTransmitReceive(true);
@@ -88,8 +90,8 @@ public class DetectedFreqHandler implements Goertzel.FrequenciesDetectedHandler 
                                 });
                                 betweenStartStop = false;
 //                                ReceiveMessage updateFiltered = new ReceiveMessage(activity, Arrays.toString(activity.receiveLog.toArray()) + " = " + EncodeDecode.decode(activity.receiveLog));
-                                ReceiveMessage updateFiltered = new ReceiveMessage(activity, EncodeDecode.decode(activity, activity.receiveLog));
-                                activity.runOnUiThread(updateFiltered);
+                                receiveMessage.data = EncodeDecode.decode(activity, activity.receiveLog, true);
+                                activity.runOnUiThread(receiveMessage);
                                 activity.receiveLog = new ArrayList<Integer>();
                             } else {
                                 System.out.println("Received not between startStop:" + Arrays.toString(activity.receiveLog.toArray()));
@@ -102,6 +104,8 @@ public class DetectedFreqHandler implements Goertzel.FrequenciesDetectedHandler 
                         else {
                             if (val != lastVal) {
                                 activity.receiveLog.add(val);
+                                receiveMessage.data = EncodeDecode.decode(activity, activity.receiveLog, false);
+                                activity.runOnUiThread(receiveMessage);
                                 long currMs = java.lang.System.currentTimeMillis();
                                 System.out.println("Time since last val: " + (currMs - lastMs));
                                 lastMs = currMs;

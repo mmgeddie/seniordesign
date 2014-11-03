@@ -1,4 +1,4 @@
-package edu.ut.whispercom.whispercom;;
+package edu.ut.whispercom.whispercom;
 
 import android.app.Activity;
 import android.util.Pair;
@@ -15,21 +15,23 @@ import java.util.List;
  * Created by tbren_000 on 10/8/2014.
  */
 public class MessageAdapter extends BaseAdapter {
-    private List<Pair<String, Integer>> messages;
+    private List<Message> messages;
     private LayoutInflater layoutInflater;
     public static final int DIRECTION_INCOMING = 0;
     public static final int DIRECTION_OUTGOING = 1;
 
     public MessageAdapter(Activity activity) {
         layoutInflater = activity.getLayoutInflater();
-        messages = new ArrayList<Pair<String, Integer>>();
+        messages = new ArrayList<Message>();
     }
 
     //Gets called every time you update the view with an
     //incoming or outgoing message
-    public void addMessage(String message, int direction) {
-        messages.add(new Pair(message, direction));
+    public Message addMessage(String data, int direction) {
+        Message message = new Message(data, direction);
+        messages.add(message);
         notifyDataSetChanged();
+        return message;
     }
 
     //Returns how many messages are in the list
@@ -57,7 +59,7 @@ public class MessageAdapter extends BaseAdapter {
     //This returns either DIRECTION_INCOMING or DIRECTION_OUTGOING
     @Override
     public int getItemViewType(int i) {
-        return messages.get(i).second;
+        return messages.get(i).direction;
     }
 
     @Override
@@ -73,10 +75,12 @@ public class MessageAdapter extends BaseAdapter {
             }
             convertView = layoutInflater.inflate(res, viewGroup, false);
         }
-        String message = messages.get(i).first;
+        String message = messages.get(i).data;
 
         TextView txtMessage = (TextView) convertView.findViewById(R.id.txtMessage);
         txtMessage.setText(message);
+        TextView txtSender = (TextView) convertView.findViewById(R.id.txtMessage);
+        txtSender.setText(message);
 
         return convertView;
     }
