@@ -13,7 +13,7 @@ public class PlaySound {
     // and modified by Steve Pomeroy <steve@staticfree.info>
     private final static int duration = 1; // seconds
     private final static int sampleRate = AudioTrack.getNativeOutputSampleRate(AudioManager.STREAM_MUSIC);
-    private final static int numSamples = (duration * sampleRate)/4;
+    private final static int numSamples = (duration * sampleRate)/5; /* TODO: play with sample rate to improve bandwidth (increase divinging number */
     private final static double sampleRow[] = new double[numSamples];
     private final static double sampleCol[] = new double[numSamples];
     private static double freqOfRowTone; // hz

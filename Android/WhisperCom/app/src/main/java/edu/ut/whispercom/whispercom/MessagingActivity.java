@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -110,8 +111,10 @@ public class MessagingActivity extends ActionBarActivity {
         }
 
         //Here is where you will actually send the message throught Sinch
-        Toast.makeText(this, "Sending message! recipientId: " + recipientId
-                + " Message: " + messageBody, Toast.LENGTH_LONG).show();
+        Toast toast = Toast.makeText(this, "Sending message! recipientId: " + recipientId
+                + " Message: " + messageBody, Toast.LENGTH_LONG);
+        toast.setGravity(Gravity.CENTER, 0, 0);
+        toast.show();
         messageBodyField.setText("");
         messageBody = username + ": " + messageBody;
 
