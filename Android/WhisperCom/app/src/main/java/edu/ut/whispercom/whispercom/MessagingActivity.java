@@ -120,6 +120,11 @@ public class MessagingActivity extends ActionBarActivity {
 
         int[] out = EncodeDecode.encode(messageBody);
 //        messageAdapter.addMessage(Arrays.toString(out) + " = " + messageBody, MessageAdapter.DIRECTION_OUTGOING);
+
+        // DEBUG: used for debugging to test bandwidth
+        //Date now = new Date();
+        //messageAdapter.addMessage(messageBody + " Time: " + now.getTime(), MessageAdapter.DIRECTION_OUTGOING);
+
         messageAdapter.addMessage(messageBody, MessageAdapter.DIRECTION_OUTGOING);
 
         playMessage(out);

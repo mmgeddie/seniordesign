@@ -66,7 +66,6 @@ public class PlaySound {
         freqOfRowTone = rowFreqs[index / colFreqs.length];
         freqOfColTone = colFreqs[index % colFreqs.length];
         writeSound(genTone());
-        writeSound(new byte[numSamples]);
     }
 
     private static void writeSound(byte generatedSnd[]){
