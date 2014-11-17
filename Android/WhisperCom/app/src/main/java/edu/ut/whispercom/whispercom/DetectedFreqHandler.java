@@ -75,7 +75,9 @@ public class DetectedFreqHandler implements Goertzel.FrequenciesDetectedHandler 
                             activity.lastRecieved = new Date();
                             activity.receiveLog = new ArrayList<Integer>();
                             betweenStartStop = true;
+                            receiveMessage=null;
                             receiveMessage = new ReceiveMessage(activity);
+
                             activity.runOnUiThread(new Runnable() {
                                 public void run() {
                                     activity.setTransmitReceive(true);
