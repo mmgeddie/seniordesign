@@ -18,7 +18,7 @@ public class DetectedFreqHandler implements Goertzel.FrequenciesDetectedHandler 
     private MessagingActivity activity;
     private int lastVal = -1;
     private boolean betweenStartStop = false;
-    ReceiveMessage receiveMessage = new ReceiveMessage(activity);
+    private boolean repeatMode = false;
 
     private static long lastMs = java.lang.System.currentTimeMillis();
 
@@ -60,24 +60,24 @@ public class DetectedFreqHandler implements Goertzel.FrequenciesDetectedHandler 
 			    if (high1power > high3power + 10 && high2power > high3power + 10) {
                     int rowIndex = -1;
                     int colIndex = -1;
-                    for (int i = 0; i < MyActivity.rowFreqs.length; i++) {
+                    for (int i = 0; i < MessagingActivity.rowFreqs.length; i++) {
                         if (frequencies[high1index] == allFrequencies[i] || frequencies[high2index] == allFrequencies[i])
                             rowIndex = i;
                     }
-                    for (int i = MyActivity.rowFreqs.length; i < allFrequencies.length; i++) {
+                    for (int i = MessagingActivity.rowFreqs.length; i < allFrequencies.length; i++) {
                         if (frequencies[high1index] == allFrequencies[i] || frequencies[high2index] == allFrequencies[i])
-                            colIndex = i-(MyActivity.rowFreqs.length);
+                            colIndex = i-(MessagingActivity.rowFreqs.length);
                     }
                     if(rowIndex>=0 && colIndex>=0){
-                        int val = colIndex + (rowIndex * MyActivity.colFreqs.length);
+                        int val = colIndex + (rowIndex * MessagingActivity.colFreqs.length);
                         System.out.println("Detected index: "+ val);
                         if (val == 16) { // Start tone
-                            activity.lastRecieved = new Date();
+                            if (!repeatMode) {
+                                activity.lastRecieved = new Date();
+                            }
                             activity.receiveLog = new ArrayList<Integer>();
                             betweenStartStop = true;
-                            receiveMessage=null;
-                            receiveMessage = new ReceiveMessage(activity);
-
+                            lastVal = -1;
                             activity.runOnUiThread(new Runnable() {
                                 public void run() {
                                     activity.setTransmitReceive(true);
@@ -91,26 +91,36 @@ public class DetectedFreqHandler implements Goertzel.FrequenciesDetectedHandler 
                                     }
                                 });
                                 betweenStartStop = false;
-//                                ReceiveMessage updateFiltered = new ReceiveMessage(activity, Arrays.toString(activity.receiveLog.toArray()) + " = " + EncodeDecode.decode(activity.receiveLog));
-                                receiveMessage.data = EncodeDecode.decode(activity, activity.receiveLog, true);
-                                activity.runOnUiThread(receiveMessage);
+                                if (repeatMode) {
+                                    repeatMode = false;
+                                    EncodeDecode.repeatSequence(activity, activity.receiveLog);
+                                } else {
+                                    if (activity.receiveLog.size() == 0) { //Signals end of packet sequence transmission
+                                        EncodeDecode.checkForErrors(activity);
+                                    } else {
+                                        EncodeDecode.decode(activity, activity.receiveLog, true);
+                                    }
+                                }
                                 activity.receiveLog = new ArrayList<Integer>();
                             } else {
                                 System.out.println("Received not between startStop:" + Arrays.toString(activity.receiveLog.toArray()));
                             }
-                        } else if (val == 18) {
+                        } else if (val == 18) { // RepeatForError
                             if (activity.lastRecieved.compareTo(activity.lastSent) < 0) {
-                                activity.playMessage(activity.lastMessage);
+                                repeatMode = true;
+                                System.out.println("RepeatForError");
+//                                activity.playMessage(activity.lastMessage);
                             }
                         }
                         else {
                             if (val != lastVal) {
                                 activity.receiveLog.add(val);
-                                receiveMessage.data = EncodeDecode.decode(activity, activity.receiveLog, false);
-                                activity.runOnUiThread(receiveMessage);
-                                long currMs = java.lang.System.currentTimeMillis();
-                                System.out.println("Time since last val: " + (currMs - lastMs));
-                                lastMs = currMs;
+                                if (!repeatMode) {
+                                    EncodeDecode.decode(activity, activity.receiveLog, false);
+                                }
+//                                long currMs = java.lang.System.currentTimeMillis();
+//                                System.out.println("Time since last val: " + (currMs - lastMs));
+//                                lastMs = currMs;
                             }
                             lastVal = val;
                         }

@@ -7,7 +7,7 @@ import java.util.Date;
  */
 public class ReceiveMessage implements Runnable {
     MessagingActivity activity;
-    String data;
+    String data = "";
     Message message;
     ReceiveMessage(MessagingActivity activity) {
         this.activity = activity;

@@ -76,11 +76,16 @@ public class MessageAdapter extends BaseAdapter {
             convertView = layoutInflater.inflate(res, viewGroup, false);
         }
         String message = messages.get(i).data;
+        String sender = "";
+        if (message.indexOf(":") > -1) {
+            sender = message.substring(0, message.indexOf(":"));
+            message = message.substring(message.indexOf(":")+1, message.length());
+        }
 
         TextView txtMessage = (TextView) convertView.findViewById(R.id.txtMessage);
         txtMessage.setText(message);
-        TextView txtSender = (TextView) convertView.findViewById(R.id.txtMessage);
-        txtSender.setText(message);
+        TextView txtSender = (TextView) convertView.findViewById(R.id.txtSender);
+        txtSender.setText(sender);
 
         return convertView;
     }

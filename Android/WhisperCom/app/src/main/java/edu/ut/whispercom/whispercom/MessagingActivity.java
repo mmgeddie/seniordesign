@@ -21,8 +21,11 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 
 public class MessagingActivity extends ActionBarActivity {
@@ -35,12 +38,14 @@ public class MessagingActivity extends ActionBarActivity {
     private String username;
     private boolean transmitReceive = false;
     private Listner listner;
+    final static int[] rowFreqs = {18000, 18200, 18400, 18600, 18800};
+    final static int[] colFreqs = {19000, 19250, 19500, 19750};
     MessageAdapter messageAdapter;
     ListView messagesList;
     List<Integer> receiveLog = new ArrayList<Integer>();
     Date lastRecieved  = new Date(Long.MIN_VALUE + 1);
     Date lastSent = new Date(Long.MIN_VALUE);
-    int[] lastMessage;
+    List<int[]> lastMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,8 +122,25 @@ public class MessagingActivity extends ActionBarActivity {
         toast.show();
         messageBodyField.setText("");
         messageBody = username + ": " + messageBody;
+        if (messageBody.length() % 4 != 0) {
+            StringBuilder sb = new StringBuilder(messageBody);
+            for (int i = 0; i < (3-(messageBody.length()%4)); i++) {
+                sb.append(" ");
+            }
+            sb.append(String.valueOf((char)4));
+            messageBody = sb.toString();
+        } else {
+            messageBody = messageBody + "   " + String.valueOf((char)4);
+        }
 
-        int[] out = EncodeDecode.encode(messageBody);
+        List<int[]> packetList = new ArrayList<int[]>();
+        Queue<int[]> packetQueue = new LinkedList<int[]>();
+        for (int i = 0; i < messageBody.length()/4; i++) {
+            int[] packetArr = EncodeDecode.encode(messageBody.substring((i*4), (i*4)+4), i);
+            packetList.add(packetArr);
+            packetQueue.add(packetArr);
+        }
+
 //        messageAdapter.addMessage(Arrays.toString(out) + " = " + messageBody, MessageAdapter.DIRECTION_OUTGOING);
 
         // DEBUG: used for debugging to test bandwidth
@@ -127,8 +149,8 @@ public class MessagingActivity extends ActionBarActivity {
 
         messageAdapter.addMessage(messageBody, MessageAdapter.DIRECTION_OUTGOING);
 
-        playMessage(out);
-        lastMessage = out;
+        playMessage(packetQueue);
+        lastMessage = packetList;
         lastSent = new Date();
 
     }
@@ -167,7 +189,18 @@ public class MessagingActivity extends ActionBarActivity {
         }
     }
 
-    public void playMessage(int[] message) {
+    public void playMessage(int[] inMessage, boolean addDoubleStop) {
+        int[] message;
+        if (addDoubleStop) {
+            message = new int[inMessage.length+2];
+            for (int i = 0; i < inMessage.length; i++) {
+                message[i] = inMessage[i];
+            }
+            inMessage[inMessage.length-2] = 16;
+            inMessage[inMessage.length-1] = 19;
+        } else {
+            message = inMessage;
+        }
         runOnUiThread(new Runnable() {
             public void run() {
                 setTransmitReceive(true);
@@ -190,6 +223,35 @@ public class MessagingActivity extends ActionBarActivity {
             }
         }
         Thread t = new Thread(new MessagePlayer(message));
+        t.start();
+    }
+
+    public void playMessage(Queue<int[]> messages) {
+        messages.add(new int[]{16, 19});
+        runOnUiThread(new Runnable() {
+            public void run() {
+                setTransmitReceive(true);
+            }
+        });
+        listner.stopProcessing();
+        class MessagePlayer implements Runnable {
+            Queue<int[]> messages;
+            MessagePlayer(Queue<int[]> messages) { this.messages = messages; }
+            public void run() {
+                for (int[] message : messages) {
+                    for (int i : message) {
+                        PlaySound.playSound(i);
+                    }
+                }
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        setTransmitReceive(false);
+                        listner.process();
+                    }
+                });
+            }
+        }
+        Thread t = new Thread(new MessagePlayer(messages));
         t.start();
     }
 

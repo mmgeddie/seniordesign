@@ -29,6 +29,7 @@ public class Listner {
 	/**
 	 * 
 	 */
+    private boolean isListening = false;
 
     private final int sampleRate = 44100;
 //    private final int sampleRate = 8000;
@@ -40,12 +41,12 @@ public class Listner {
     private AudioDispatcher dispatcher = null;
 
 	public Listner(MessagingActivity activity){
-        frequency = new double[MyActivity.colFreqs.length+MyActivity.rowFreqs.length];
-        for (int i = 0; i< MyActivity.rowFreqs.length; i++) {
-            frequency[i] = MyActivity.rowFreqs[i];
+        frequency = new double[MessagingActivity.colFreqs.length+MessagingActivity.rowFreqs.length];
+        for (int i = 0; i< MessagingActivity.rowFreqs.length; i++) {
+            frequency[i] = MessagingActivity.rowFreqs[i];
         }
-        for (int i = 0; i< MyActivity.colFreqs.length; i++) {
-            frequency[MyActivity.rowFreqs.length + i] = MyActivity.colFreqs[i];
+        for (int i = 0; i< MessagingActivity.colFreqs.length; i++) {
+            frequency[MessagingActivity.rowFreqs.length + i] = MessagingActivity.colFreqs[i];
         }
 
         goertzelAudioProcessor = new GoertzelImpl(sampleRate, frequency, new DetectedFreqHandler(activity));
@@ -57,7 +58,7 @@ public class Listner {
 	 * Process a DTMF character: generate sound and decode the sound.
 	 */
 	public void process(){
-
+        isListening = true;
         try {
             final int minBufferSize = AudioRecord.getMinBufferSize(sampleRate,
                     android.media.AudioFormat.CHANNEL_IN_MONO,
@@ -74,7 +75,8 @@ public class Listner {
 	}
 
     public void stopProcessing() {
-        if (dispatcher != null) {
+        if (isListening && dispatcher != null) {
+            isListening = false;
             dispatcher.stop();
         }
     }

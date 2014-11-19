@@ -13,13 +13,13 @@ public class PlaySound {
     // and modified by Steve Pomeroy <steve@staticfree.info>
     private final static int duration = 1; // seconds
     private final static int sampleRate = AudioTrack.getNativeOutputSampleRate(AudioManager.STREAM_MUSIC);
-    private final static int numSamples = (duration * sampleRate)/5; /* TODO: play with sample rate to improve bandwidth (increase divinging number */
+    private final static int numSamples = (duration * sampleRate)/4; /* TODO: play with sample rate to improve bandwidth (increase divinging number */
     private final static double sampleRow[] = new double[numSamples];
     private final static double sampleCol[] = new double[numSamples];
     private static double freqOfRowTone; // hz
     private static double freqOfColTone; // hz
-    private final static int[] rowFreqs = MyActivity.rowFreqs;
-    private final static int[] colFreqs = MyActivity.colFreqs;
+    private final static int[] rowFreqs = MessagingActivity.rowFreqs;
+    private final static int[] colFreqs = MessagingActivity.colFreqs;
     private final static AudioTrack audioTrackRow = new AudioTrack(AudioManager.STREAM_MUSIC,
             sampleRate, AudioFormat.CHANNEL_OUT_MONO,
             AudioFormat.ENCODING_PCM_16BIT, numSamples,
@@ -66,6 +66,7 @@ public class PlaySound {
         freqOfRowTone = rowFreqs[index / colFreqs.length];
         freqOfColTone = colFreqs[index % colFreqs.length];
         writeSound(genTone());
+        writeSound(new byte[numSamples]);
     }
 
     private static void writeSound(byte generatedSnd[]){
