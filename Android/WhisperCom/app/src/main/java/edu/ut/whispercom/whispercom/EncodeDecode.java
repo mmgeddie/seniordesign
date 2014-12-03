@@ -141,6 +141,12 @@ public class EncodeDecode {
                         checkForErrors(activity);
                     } else {
                         if (sequence < lastSequence) {
+                            StringBuilder totalMessage = new StringBuilder();
+                            for (int i = 0; i < recievedMessageList.size() ; i++) {
+                                totalMessage.append(recievedMessageList.get(i));
+                            }
+                            receiveMessage.data = totalMessage.toString();
+                            activity.runOnUiThread(receiveMessage);
                             recievedMessageList = new ArrayList<String>();
                             receiveMessage = new ReceiveMessage(activity);
                             System.out.println("new message here1");
@@ -186,7 +192,7 @@ public class EncodeDecode {
                 errors.add(lastSequence+1);
             }
         }
-        if (errors.size() > 0) {
+        if (errors.size() == 1) {
             waitingForRepeat = true;
             ArrayList<Integer> repeatMessage = new ArrayList<Integer>();
             repeatMessage.add(18);
